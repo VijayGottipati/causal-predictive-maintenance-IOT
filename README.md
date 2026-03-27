@@ -424,6 +424,19 @@ See **Ship to GitHub & Render** above for the full flow. Summary:
 - Use **`render.yaml`** (Blueprint) or the same build/start/health commands from that file.
 - Optional env vars: `MLFLOW_TRACKING_URI`, `MLFLOW_EXPERIMENT_NAME`, `KAFKA_BOOTSTRAP_SERVERS` (the API exposes whether they are set on `/health`).
 
+### MLflow metrics (Render)
+
+Your **API URL** (for example `https://ml-predictive-maintenance.onrender.com`) is **not** the MLflow UI. MLflow is a **separate** service.
+
+1. **Blueprint:** `render.yaml` includes a **`mlflow-tracking`** web service (Dockerfile `Dockerfile.mlflow`). After sync/deploy, open the **mlflow-tracking** service in the Render dashboard and copy its public URL, e.g. `https://mlflow-tracking-xxxx.onrender.com`.
+2. **API service (`ml-predictive-maintenance`):** **Environment** → add **`MLFLOW_TRACKING_URI`** = that full `https://…` URL (no trailing slash).
+3. In Render, enable **this variable for builds** (e.g. “available at build time” / include in Docker build) so **`python scripts/bootstrap_deploy.py`** during the build can run **`train.py`** and log to MLflow.
+4. **Redeploy** the API (e.g. **Clear build cache & deploy**) so training runs again and metrics appear in the MLflow UI.
+5. Check **`GET /health`** on the API — `mlflow_configured` should be `true` after the var is set (runtime).  
+   Docs: [Render environment variables](https://render.com/docs/environment-variables), [MLflow tracking](https://mlflow.org/docs/latest/tracking.html).
+
+**Note:** Free MLflow on Render uses **ephemeral** disk; experiment data can reset on redeploy. For persistence, use a managed MLflow host or attach storage per Render docs.
+
 ---
 
 ## Docker: MLflow + Kafka + API (local full stack)

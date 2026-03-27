@@ -5,8 +5,22 @@
 #   Build:  pip install -r api/requirements.txt && python scripts/bootstrap_deploy.py
 #   Start:  uvicorn api.main:app --host 0.0.0.0 --port $PORT
 #   Health: /health
+#
+# MLflow: separate URL (e.g. https://mlflow-tracking-xxxx.onrender.com). After it is live,
+# set MLFLOW_TRACKING_URI on the API service to that https URL and turn ON “available at build time”
+# for that var, then redeploy the API so bootstrap train.py can log runs.
 
 services:
+  - type: web
+    name: mlflow-tracking
+    plan: free
+    runtime: docker
+    region: oregon
+    dockerfilePath: ./Dockerfile.mlflow
+    dockerContext: .
+    healthCheckPath: /
+    autoDeployTrigger: commit
+
   - type: web
     name: ml-predictive-maintenance
     # Use Free tier ($0) — avoids defaulting to Starter ($7/mo). Spins down after ~15m idle.

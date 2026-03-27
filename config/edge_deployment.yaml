@@ -1,0 +1,147 @@
+# Edge Deployment Configuration
+# For deploying ML model to resource-constrained devices
+
+version: '1.0'
+
+# Model Configuration
+model:
+  name: predictive-maintenance
+  version: "2.0.0"
+  framework: sklearn
+  path: models/model.pkl
+
+# Inference Configuration
+inference:
+  batch_size: 16
+  max_workers: 2
+  timeout_ms: 100
+  optimize: true
+
+# Quantization Settings
+quantization:
+  enabled: true
+  type: int8
+  calibration_samples: 100
+
+# Hardware Targets
+targets:
+  - name: raspberry_pi_4
+    arch: aarch64
+    memory: 4GB
+    cpu: cortex-a72
+    
+  - name: jetson_nano
+    arch: aarch64
+    memory: 4GB
+    gpu: 128-core
+    
+  - name: esp32
+    arch: xtensa
+    memory: 520KB
+    cpu: dual-core
+
+# Docker Configuration
+docker:
+  base_image: python:3.11-slim
+  port: 8000
+  health_check: /health
+  
+  # Build for different targets
+  builds:
+    - target: raspberry_pi_4
+      args:
+        - PLATFORM=linux/arm64
+    
+    - target: jetson_nano
+      args:
+        - PLATFORM=linux/arm64
+        - ENABLE_TRT=1
+    
+    - target: esp32
+      # Requires tinyML conversion
+      args:
+        - PLATFORM=esp32
+        - TINYML=1
+
+# Kubernetes Deployment (for larger edge devices)
+kubernetes:
+  replicas: 2
+  resources:
+    limits:
+      cpu: "1"
+      memory: "512Mi"
+    requests:
+      cpu: "0.5"
+      memory: "256Mi"
+  
+  hpa:
+    enabled: true
+    min_replicas: 1
+    max_replicas: 5
+    target_cpu: 70
+
+# Optimization Settings
+optimization:
+  # ONNX Runtime options
+  onnx:
+    graph_optimization: full
+    execution_providers:
+      - CPUExecutionProvider
+      # Add for devices with GPU:
+      # - CUDAExecutionProvider
+      # - TensorrtExecutionProvider
+  
+  # Model compression
+  compression:
+    - type: quantization
+      method: dynamic
+      dtype: int8
+      
+    - type: pruning
+      amount: 0.3
+      method: magnitude
+
+# API Endpoints (edge-optimized)
+endpoints:
+  - path: /predict
+    method: POST
+    timeout: 50ms
+    cache: true
+    
+  - path: /health
+    method: GET
+    timeout: 10ms
+    
+  - path: /model/info
+    method: GET
+    timeout: 10ms
+
+# Monitoring
+monitoring:
+  metrics:
+    - inference_latency
+    - prediction_accuracy
+    - model_drift
+    - memory_usage
+    
+  export_interval: 60s
+  
+  # Local Prometheus (for edge)
+  prometheus:
+    enabled: true
+    port: 9090
+    
+  # Local Grafana (for edge)
+  grafana:
+    enabled: false  # Can enable for debugging
+
+# Offline Capabilities
+offline:
+  enabled: true
+  sync_interval: 24h
+  
+  # Cache models and data for offline use
+  cache:
+    models: 3
+    data_points: 10000
+    predictions: 1000

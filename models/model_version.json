@@ -1,0 +1,9 @@
+{
+  "version": "v3.0",
+  "f1_score_weighted": 0.9914647537199475,
+  "f1_score_macro": 0.9289747505238112,
+  "retrain_reason": "drift_detected",
+  "csos_enabled": true,
+  "training_status": "Standard",
+  "training_samples": 4000
+}

@@ -1,0 +1,31 @@
+# Render Blueprint: https://render.com/docs/blueprint-spec
+# Dashboard: New → Blueprint → connect this Git repo → Render detects render.yaml
+#
+# Web Service (manual) alternative:
+#   Build:  pip install -r api/requirements.txt && python scripts/bootstrap_deploy.py
+#   Start:  uvicorn api.main:app --host 0.0.0.0 --port $PORT
+#   Health: /health
+
+services:
+  - type: web
+    name: ml-predictive-maintenance
+    runtime: python
+    region: oregon
+    # branch defaults to your repo’s connected branch in the Render dashboard
+    rootDir: .
+    buildCommand: pip install -r api/requirements.txt && python scripts/bootstrap_deploy.py
+    startCommand: uvicorn api.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    # Use checksPass once GitHub Actions is connected to the repo (deploy only if CI is green)
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.8"
+      # Optional: point to your MLflow server (DagsHub, managed MLflow, etc.)
+      - key: MLFLOW_TRACKING_URI
+        sync: false
+      - key: MLFLOW_EXPERIMENT_NAME
+        value: predictive-maintenance
+      # Optional: for services that call Kafka (workers); API only exposes flags on /health
+      - key: KAFKA_BOOTSTRAP_SERVERS
+        sync: false

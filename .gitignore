@@ -1,0 +1,55 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.log
+
+# Local / runtime state (regenerate in CI)
+drift_detected.json
+data/recent_predictions.json
+
+# Data
+*.csv
+*.npy
+*.pkl
+*.onnx
+*.h5
+
+# Model outputs
+models/*.pkl
+models/*.onnx
+!models/README.md
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+!.env.example
+
+# Logs
+logs/
+*.log
+
+# Temp files
+tmp/
+temp/

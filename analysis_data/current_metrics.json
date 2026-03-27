@@ -1,0 +1,77 @@
+{
+  "csos": {
+    "original_samples": 4000,
+    "original_failures": 130,
+    "original_failure_rate": 0.0325,
+    "csos_synthetic_failures": 2157,
+    "csos_near_misses": 843,
+    "total_augmented": 7000,
+    "augmentation_factor": 1.75,
+    "failure_rate_after_csos": 0.32671428571428573
+  },
+  "iwl": {
+    "total_failures": 130,
+    "actionable_failures": 61,
+    "unavoidable_failures": 69,
+    "actionable_ratio": 0.46923076923076923,
+    "unavoidable_ratio": 0.5307692307692308,
+    "business_value_increase": "47%"
+  },
+  "caq": {
+    "total_features": 10,
+    "high_precision_features": 3,
+    "medium_precision_features": 7,
+    "baseline_bits": 80,
+    "caq_bits": 104,
+    "memory_savings_percent": -30.000000000000004,
+    "precision_features": [
+      "Type",
+      "Tool wear",
+      "Wear_Stress"
+    ]
+  },
+  "pmw": {
+    "enabled": true,
+    "prediction_horizon": "6 hours (based on cron schedule)",
+    "background_retrain": true,
+    "preload_standby": true,
+    "cold_start_eliminated": true,
+    "latency_improvement": "~100%"
+  },
+  "cci": {
+    "cci_scores": [
+      10.0,
+      22.944,
+      10.0
+    ],
+    "mean_cci": 14.314666666666668,
+    "median_cci": 10.0,
+    "max_cci": 22.944,
+    "min_cci": 10.0,
+    "robust_predictions": 3,
+    "fragile_predictions": 0,
+    "robustness_ratio": 1.0
+  },
+  "performance": {
+    "accuracy": 0.992,
+    "precision": 1.0,
+    "recall": 0.7575757575757576,
+    "f1_weighted": 0.9914647537199475,
+    "f1_macro": 0.9289747505238112,
+    "true_negatives": 967,
+    "false_positives": 0,
+    "false_negatives": 8,
+    "true_positives": 25
+  },
+  "drift": {
+    "features_analyzed": 10,
+    "significant_drift_features": 1,
+    "drift_features": [
+      "Torque"
+    ],
+    "max_drift_feature": "Torque",
+    "max_drift_value": 0.6,
+    "avg_drift": 0.187,
+    "threshold": 0.3
+  }
+}

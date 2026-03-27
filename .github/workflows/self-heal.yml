@@ -1,0 +1,89 @@
+name: Self-Healing ML Pipeline
+
+permissions:
+  contents: write
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+  repository_dispatch:
+    types: [drift-detected]
+
+jobs:
+  drift-detection:
+    runs-on: ubuntu-latest
+    outputs:
+      drift_found: ${{ steps.export.outputs.drift_found }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Bootstrap artifacts if missing
+        run: python scripts/bootstrap_deploy.py
+
+      - name: Run drift detection
+        id: drift-check
+        run: python scripts/drift_check.py
+
+      - name: Export drift flag
+        id: export
+        run: |
+          python << 'PY'
+          import json, os
+          drift = False
+          p = "drift_detected.json"
+          if os.path.isfile(p):
+              with open(p) as f:
+                  drift = bool(json.load(f).get("drift_detected", False))
+          out = os.environ["GITHUB_OUTPUT"]
+          with open(out, "a") as o:
+              o.write(f"drift_found={'true' if drift else 'false'}\n")
+          print("drift_found=", drift)
+          PY
+
+      - name: Retrain on drift
+        if: steps.export.outputs.drift_found == 'true'
+        run: python scripts/retrain.py
+
+      - name: Upload model artifact
+        if: steps.export.outputs.drift_found == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: model-artifact
+          path: models/model.pkl
+          if-no-files-found: warn
+
+      - name: Create tag (optional)
+        if: steps.export.outputs.drift_found == 'true'
+        continue-on-error: true
+        run: |
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          TAG="retrain-$(date +%Y%m%d%H%M%S)"
+          git tag -a "$TAG" -m "Auto-retrain after drift"
+          git push origin "$TAG"
+
+  notify-render:
+    needs: drift-detection
+    if: needs.drift-detection.outputs.drift_found == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render deploy hook
+        env:
+          HOOK: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -z "$HOOK" ]; then
+            echo "RENDER_DEPLOY_HOOK_URL not set; skip Render trigger."
+            exit 0
+          fi
+          curl -fsS -X POST "$HOOK"

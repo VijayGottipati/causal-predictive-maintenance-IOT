@@ -1,0 +1,57 @@
+{
+  "noise_std_on_scaled_features": 0.08,
+  "latency_repeats": 30,
+  "variants": [
+    {
+      "variant": "optimized_full_stack",
+      "threshold": 0.3500000000000001,
+      "model_path": "models\\model.pkl",
+      "accuracy": 0.993,
+      "precision": 0.9333333333333333,
+      "recall": 0.8484848484848485,
+      "f1_weighted": 0.9928387540870762,
+      "f1_macro": 0.9426375265301439,
+      "model_size_bytes": 1720473,
+      "latency_mean_ms": 54.771753333625384,
+      "latency_std_ms": 3.661056738571537,
+      "latency_p99_ms": 65.40407098917058,
+      "f1_clean_weighted": 0.9928387540870762,
+      "f1_noisy_weighted": 0.9887466135654055,
+      "noise_robustness_ratio": 0.9958783432809958
+    },
+    {
+      "variant": "ablation_no_csos_cci_caq_iwl_pmw",
+      "threshold": 0.5,
+      "model_path": "experiments\\ablation_no_csos_cci_caq_iwl_pmw\\artifacts\\model.pkl",
+      "accuracy": 0.992,
+      "precision": 1.0,
+      "recall": 0.7575757575757576,
+      "f1_weighted": 0.9914647537199475,
+      "f1_macro": 0.9289747505238112,
+      "model_size_bytes": 1720473,
+      "latency_mean_ms": 54.092183332735054,
+      "latency_std_ms": 2.960642415921069,
+      "latency_p99_ms": 63.97187599592144,
+      "f1_clean_weighted": 0.9914647537199475,
+      "f1_noisy_weighted": 0.9857367609254498,
+      "noise_robustness_ratio": 0.9942226964972719
+    },
+    {
+      "variant": "baseline_no_optimizations",
+      "threshold": 0.5,
+      "model_path": "experiments\\baseline_no_optimizations\\artifacts\\model.pkl",
+      "accuracy": 0.992,
+      "precision": 0.9032258064516129,
+      "recall": 0.8484848484848485,
+      "f1_weighted": 0.9918791322314049,
+      "f1_macro": 0.9354338842975207,
+      "model_size_bytes": 608457,
+      "latency_mean_ms": 45.7744699990144,
+      "latency_std_ms": 13.504043308785274,
+      "latency_p99_ms": 100.21972799353539,
+      "f1_clean_weighted": 0.9918791322314049,
+      "f1_noisy_weighted": 0.9887466135654055,
+      "noise_robustness_ratio": 0.996841834287861
+    }
+  ]
+}

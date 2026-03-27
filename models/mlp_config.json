@@ -1,0 +1,11 @@
+{
+  "hidden_layers": [
+    128,
+    64,
+    32
+  ],
+  "activation": "relu",
+  "threshold": 0.35,
+  "model_path": "models/mlp_model.pkl",
+  "scaler_path": "models/mlp_scaler.pkl"
+}

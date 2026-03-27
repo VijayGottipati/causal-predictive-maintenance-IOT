@@ -1,0 +1,17 @@
+.git
+.github
+**/__pycache__
+**/*.pyc
+.venv
+venv
+env
+.pytest_cache
+.ruff_cache
+*.log
+.env
+.env.*
+!.env.example
+experiments/*/artifacts
+visualizations/*.png
+htmlcov
+.coverage
